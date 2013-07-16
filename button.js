@@ -1,15 +1,15 @@
-var nbcpq_text = '';
-var nbcpq_visual = false;
+var wdspq_text = '';
+var wdspq_visual = false;
 
 jQuery(function($) {
 	var
-	quote = $( '#nbcpq-quote' ),
-	attrib = $( '#nbcpq-attrib' ),
-	attrib_link = $( '#nbcpq-attrib-link' ),
-	align = $( '#nbcpq-align' ),
-	width = $( '#nbcpq-width' ),
-	doquote = $( '#nbcpq-doquote' ),
-	errors = $( '.nbcpq-errors' );
+	quote = $( '#wdspq-quote' ),
+	attrib = $( '#wdspq-attrib' ),
+	attrib_link = $( '#wdspq-attrib-link' ),
+	align = $( '#wdspq-align' ),
+	width = $( '#wdspq-width' ),
+	doquote = $( '#wdspq-doquote' ),
+	errors = $( '.wdspq-errors' );
 	errorsdefault = $('p',errors).text(),
 	allFields = $( [] ).add( quote ).add( align ).add( attrib ).add( attrib_link ).add( width ).add( doquote ),
 	defaults = {};
@@ -24,7 +24,7 @@ jQuery(function($) {
 		setTimeout(function() {
 			errors.removeClass( 'ui-state-highlight' );
 		}, 1500 );
-		$( '#nbcpq-form' ).height('auto');
+		$( '#wdspq-form' ).height('auto');
 	}
 
 	function checkNumber( o, n ) {
@@ -32,7 +32,7 @@ jQuery(function($) {
 
 		if ( !isNumber( val ) || val < 1 ) {
 			o.addClass( 'error' );
-			updateTips( n + ' ' + window.nbcpqtext.check_number );
+			updateTips( n + ' ' + window.wdspqtext.check_number );
 			return false;
 		} else {
 			return true;
@@ -40,10 +40,10 @@ jQuery(function($) {
 	}
 
 	function checkEmptyQuote() {
-		nbcpq_text = quote.val();
-		if ( !nbcpq_text ) {
+		wdspq_text = quote.val();
+		if ( !wdspq_text ) {
 			quote.addClass( 'error' );
-			updateTips( window.nbcpqtext.check_empty_quote );
+			updateTips( window.wdspqtext.check_empty_quote );
 			return false;
 		} else {
 			return true;
@@ -62,7 +62,7 @@ jQuery(function($) {
 
 			o.addClass( 'error' );
 			pre.addClass( 'error' );
-			updateTips( '<b>'+ prelabel +'</b> '+ window.nbcpqtext.required_pre +' <b>'+ label +'</b>' );
+			updateTips( '<b>'+ prelabel +'</b> '+ window.wdspqtext.required_pre +' <b>'+ label +'</b>' );
 			return false;
 		} else {
 			return true;
@@ -73,7 +73,7 @@ jQuery(function($) {
 		return !isNaN(parseFloat(n)) && isFinite(n);
 	}
 
-	$( '#nbcpq-form' ).dialog({
+	$( '#wdspq-form' ).dialog({
 		'dialogClass': 'wp-dialog',
 		'modal': true,
 		'autoOpen': false,
@@ -86,7 +86,7 @@ jQuery(function($) {
 				$( this ).dialog( 'close' );
 			},
 			'Insert Shortcode': function() {
-				$('#nbcpq-form .error').removeClass( 'error' );
+				$('#wdspq-form .error').removeClass( 'error' );
 				var bValid = true;
 				allFields.removeClass( 'error' );
 
@@ -113,14 +113,14 @@ jQuery(function($) {
 					if ( ! doquote.is(':checked') )
 						shortcode += ' quote="false"';
 
-					shortcode = '[nbc-pq'+ shortcode +']' + nbcpq_text + '[/nbc-pq]'
+					shortcode = '[pullquote'+ shortcode +']' + wdspq_text + '[/pullquote]'
 
-					if ( nbcpq_visual && nbcpq_visual_editor ) {
-						nbcpq_visual_editor.execCommand('mceInsertContent', 0, shortcode);
+					if ( wdspq_visual && wdspq_visual_editor ) {
+						wdspq_visual_editor.execCommand('mceInsertContent', 0, shortcode);
 					} else {
 						QTags.insertContent(shortcode);
 					}
-					nbcpq_text = '';
+					wdspq_text = '';
 					$( this ).dialog( 'close' );
 				}
 			}
@@ -138,7 +138,7 @@ jQuery(function($) {
 		},
 		close: function() {
 			errors.html('<p>' + errorsdefault + '</p>');
-			$('#nbcpq-form .error').removeClass( 'error' );
+			$('#wdspq-form .error').removeClass( 'error' );
 			for (var i = allFields.length - 1; i >= 0; i--) {
 				$(allFields[i]).val( defaults[i] );
 			};
@@ -148,17 +148,17 @@ jQuery(function($) {
 });
 
 function launch_pq_dialog( isVisual ) {
-	nbcpq_visual = isVisual === true;
+	wdspq_visual = isVisual === true;
 
-	if ( nbcpq_text )
-		setTimeout( function() { jQuery( '#nbcpq-quote' ).val(nbcpq_text).select() }, 100 );
-	jQuery( '#nbcpq-form' ).dialog( 'open' );
+	if ( wdspq_text )
+		setTimeout( function() { jQuery( '#wdspq-quote' ).val(wdspq_text).select() }, 100 );
+	jQuery( '#wdspq-form' ).dialog( 'open' );
 }
 
 // text editor button
-QTags.addButton( 'nbcpq', window.nbcpqtext.button_name, function(el, canvas) {
+QTags.addButton( 'wdspq', window.wdspqtext.button_name, function(el, canvas) {
 	// check for selection...
-	nbcpq_text = getSelectedText(canvas);
+	wdspq_text = getSelectedText(canvas);
 	launch_pq_dialog();
 });
 

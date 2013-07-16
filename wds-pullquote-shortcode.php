@@ -1,22 +1,22 @@
 <?php
 /*
-Plugin Name: NBC Pullquote Shortcode
+Plugin Name: WDS Pull Quote Shortcode
 Plugin URI: http://webdevstudios.com/
-Description: Shortcode for displaying a stylized pullquote with options for attribution, style, characters, etc. Adds a convenient pullquote button to the WordPress editor.
+Description: Shortcode for displaying a stylized pull quote with options for attribution, style, characters, etc. Adds a convenient pull quote button to the WordPress editor.
 Author: WebDevStudios.com
 Version: 1.0.0
 Author URI: http://webdevstudios.com/
 */
 
-class NBC_Pullquote_Shortcode {
+class WDS_Pull_Quote_Shortcode {
 
-	public $btn = 'nbcpq';
+	public $btn = 'wdspq';
 
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'init' )  );
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_button_script' )  );
 		add_action( 'admin_footer', array( $this, 'enqueue_button_script' )  );
-		add_shortcode( 'nbc-pq', array( $this, 'pullquote' )  );
+		add_shortcode( 'pullquote', array( $this, 'pullquote' )  );
 	}
 
 	public function init() {
@@ -37,11 +37,11 @@ class NBC_Pullquote_Shortcode {
 	public function register_button_script() {
 		wp_register_script( $this->btn, plugins_url( '/button.js', __FILE__ ) , array( 'jquery', 'jquery-ui-dialog', 'quicktags' ), '0.1.0', true );
 		wp_localize_script( $this->btn, $this->btn.'text', array(
-			'check_number' => __( 'value must be an integer and greater than 0.', 'tv-msnbc' ),
-			'check_empty_quote' => __( 'Quote must not be empty.', 'tv-msnbc' ),
-			'required_pre' => __( 'required for', 'tv-msnbc' ),
-			'button_name' => __( 'NBC Pullquote', 'tv-msnbc' ),
-			'button_title' => __( 'NBC Pullquote Shortcode', 'tv-msnbc' ),
+			'check_number' => __( 'value must be an integer and greater than 0.', 'wds' ),
+			'check_empty_quote' => __( 'Quote must not be empty.', 'wds' ),
+			'required_pre' => __( 'required for', 'wds' ),
+			'button_name' => __( 'Pull Quote', 'wds' ),
+			'button_title' => __( 'Pull Quote Shortcode', 'wds' ),
 		) );
 	}
 
@@ -55,64 +55,64 @@ class NBC_Pullquote_Shortcode {
 		// Shortcode button popup form
 		?>
 		<style type="text/css">
-			#nbcpq-form {
+			#wdspq-form {
 				padding: 0 20px;
 			}
-			#nbcpq-form .nbcpq-errors p {
+			#wdspq-form .wdspq-errors p {
 				font-size: 105%;
 			}
-			#nbcpq-form table {
+			#wdspq-form table {
 				width: 100%;
 			}
-			#nbcpq-form label {
+			#wdspq-form label {
 				display: block;
 				text-align: right;
 				padding-right: 9px;
 			}
-			#nbcpq-form input, #nbcpq-form select {
+			#wdspq-form input, #wdspq-form select {
 				max-width: 92%;
 			}
-			#nbcpq-form .ui-state-highlight {
+			#wdspq-form .ui-state-highlight {
 				color: #c00;
 			}
-			#nbcpq-form .error {
+			#wdspq-form .error {
 				border-color: #c00;
 			}
 		</style>
-		<div style="display: none;" id="nbcpq-form" title="<?php esc_attr_e( 'Pull Quote Shortcode', 'tv-msnbc' ); ?>">
-			<div class="nbcpq-errors"><p></p></div>
+		<div style="display: none;" id="wdspq-form" title="<?php esc_attr_e( 'Pull Quote Shortcode', 'wds' ); ?>">
+			<div class="wdspq-errors"><p></p></div>
 			<form>
 			<fieldset>
 				<table>
-					<tr id="nbcpq-quote-row">
-						<td><label for="nbcpq-quote"><?php _e( 'Quote', 'tv-msnbc' ); ?></label></td>
-						<td><input type="text" name="nbcpq-quote" id="nbcpq-quote" class="text ui-widget-content ui-corner-all" /></td>
+					<tr id="wdspq-quote-row">
+						<td><label for="wdspq-quote"><?php _e( 'Quote', 'wds' ); ?></label></td>
+						<td><input type="text" name="wdspq-quote" id="wdspq-quote" class="text ui-widget-content ui-corner-all" /></td>
 					</tr>
 					<tr>
-						<td><label for="nbcpq-attrib"><?php _e( 'Quote Attribution', 'tv-msnbc' ); ?></label></td>
-						<td><input type="text" name="nbcpq-attrib" id="nbcpq-attrib" value="" class="text ui-widget-content ui-corner-all" /></td>
+						<td><label for="wdspq-attrib"><?php _e( 'Quote Attribution', 'wds' ); ?></label></td>
+						<td><input type="text" name="wdspq-attrib" id="wdspq-attrib" value="" class="text ui-widget-content ui-corner-all" /></td>
 					</tr>
 					<tr>
-						<td><label for="nbcpq-attrib-link"><?php _e( 'Quote Attribution URL', 'tv-msnbc' ); ?></label></td>
-						<td><input type="text" name="nbcpq-attrib-link" id="nbcpq-attrib-link" value="" class="text ui-widget-content ui-corner-all" /></td>
+						<td><label for="wdspq-attrib-link"><?php _e( 'Quote Attribution URL', 'wds' ); ?></label></td>
+						<td><input type="text" name="wdspq-attrib-link" id="wdspq-attrib-link" value="" class="text ui-widget-content ui-corner-all" /></td>
 					</tr>
 					<tr>
-						<td><label for="nbcpq-align"><?php _e( 'Align', 'tv-msnbc' ); ?></label></td>
+						<td><label for="wdspq-align"><?php _e( 'Align', 'wds' ); ?></label></td>
 						<td>
-							<select name="nbcpq-align" id="nbcpq-align" value="left" class="text ui-widget-content ui-corner-all">
-								<option value="alignleft" selected="selected"><?php _e( 'Left', 'tv-msnbc' ); ?></option>
-								<option value="aligncenter"><?php _e( 'Centered', 'tv-msnbc' ); ?></option>
-								<option value="alignright"><?php _e( 'Right', 'tv-msnbc' ); ?></option>
+							<select name="wdspq-align" id="wdspq-align" value="left" class="text ui-widget-content ui-corner-all">
+								<option value="alignleft" selected="selected"><?php _e( 'Left', 'wds' ); ?></option>
+								<option value="aligncenter"><?php _e( 'Centered', 'wds' ); ?></option>
+								<option value="alignright"><?php _e( 'Right', 'wds' ); ?></option>
 							</select>
 						</td>
 					</tr>
 					<tr>
-						<td><label for="nbcpq-width"><?php _e( 'Pull Quote Width', 'tv-msnbc' ); ?></label></td>
-						<td><input type="number" name="nbcpq-width" id="nbcpq-width" value="52" class="text ui-widget-content ui-corner-all" />%</td>
+						<td><label for="wdspq-width"><?php _e( 'Pull Quote Width', 'wds' ); ?></label></td>
+						<td><input type="number" name="wdspq-width" id="wdspq-width" value="52" class="text ui-widget-content ui-corner-all" />%</td>
 					</tr>
 					<tr>
-						<td><label for="nbcpq-doquote"><?php _e( 'Display Quote Marks', 'tv-msnbc' ); ?></label></td>
-						<td><input type="checkbox" name="nbcpq-doquote" id="nbcpq-doquote" value="1" checked="checked" class="text ui-widget-content ui-corner-all" /></td>
+						<td><label for="wdspq-doquote"><?php _e( 'Display Quote Marks', 'wds' ); ?></label></td>
+						<td><input type="checkbox" name="wdspq-doquote" id="wdspq-doquote" value="1" checked="checked" class="text ui-widget-content ui-corner-all" /></td>
 					</tr>
 				</table>
 			</fieldset>
@@ -122,7 +122,7 @@ class NBC_Pullquote_Shortcode {
 	}
 
 	/**
-	 * Displays a pullquote
+	 * Displays a pull quote
 	 * @since 1.0.0
 	 * @param  array $args arguments to pass to the shortcode
 	 * @param  array $args arguments to pass to the shortcode
@@ -163,7 +163,7 @@ class NBC_Pullquote_Shortcode {
 
 		$width = is_numeric( $width ) && $width < 101 ? $width : 52;
 
-		return '<div style="width:'. absint( $width ) .'%" class="nbc-pq '. $align .'">'. $trimmed . $attribution .'</div>';
+		return '<div style="width:'. absint( $width ) .'%" class="pullquote '. $align .'">'. $trimmed . $attribution .'</div>';
 	}
 }
-new NBC_Pullquote_Shortcode();
+new WDS_Pull_Quote_Shortcode();

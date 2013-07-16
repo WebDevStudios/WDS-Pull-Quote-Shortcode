@@ -1,20 +1,20 @@
-var nbcpq_visual_editor = false;
+var wdspq_visual_editor = false;
 
 (function() {
-    tinymce.create('tinymce.plugins.NBC_Pullquote_Shortcode', {
+    tinymce.create('tinymce.plugins.WDS_Pullquote_Shortcode', {
         init : function(ed, url) {
-            ed.addButton('nbcpq', {
-                title : window.nbcpqtext.button_title,
-                cmd : 'nbcpq',
+            ed.addButton('wdspq', {
+                title : window.wdspqtext.button_title,
+                cmd : 'wdspq',
                 image : url + '/icon.png'
             });
 
-            ed.addCommand( 'nbcpq', function() {
-                nbcpq_text = '';
-                nbcpq_visual_editor = ed;
-                nbcpq_visual_editor.focus();
+            ed.addCommand( 'wdspq', function() {
+                wdspq_text = '';
+                wdspq_visual_editor = ed;
+                wdspq_visual_editor.focus();
                 // check for selection...
-                nbcpq_text = nbcpq_visual_editor.selection.getContent({format : 'text'});
+                wdspq_text = wdspq_visual_editor.selection.getContent({format : 'text'});
                 launch_pq_dialog(true);
             });
         },
@@ -25,7 +25,7 @@ var nbcpq_visual_editor = false;
 
         getInfo : function() {
             return {
-                longname : window.nbcpqtext.button_title,
+                longname : window.wdspqtext.button_title,
                 author : 'WebDevStudios.com',
                 authorurl : 'http://webdevstudios.com',
                 infourl : 'http://webdevstudios.com',
@@ -35,6 +35,6 @@ var nbcpq_visual_editor = false;
     });
 
     // Visual editor button
-    tinymce.PluginManager.add( 'nbcpq', tinymce.plugins.NBC_Pullquote_Shortcode );
+    tinymce.PluginManager.add( 'wdspq', tinymce.plugins.WDS_Pullquote_Shortcode );
 
 })();
