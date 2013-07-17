@@ -11,16 +11,17 @@ Author URI: http://webdevstudios.com/
 class WDS_Pull_Quote_Shortcode {
 
 	public $btn = 'wdspq';
+	public $theme_style = false;
 
 	/**
 	 * Let's get started
 	 */
 	public function __construct() {
-		add_action( 'admin_init', array( $this, 'init' )  );
-		add_action( 'admin_enqueue_scripts', array( $this, 'register_button_script' )  );
-		add_action( 'admin_footer', array( $this, 'enqueue_button_script' )  );
+		add_action( 'admin_init', array( $this, 'init' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'register_button_script' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'register_pullquote_style' ) );
+		add_action( 'admin_footer', array( $this, 'enqueue_button_script' ) );
 		add_shortcode( 'pullquote', array( $this, 'pullquote' ) );
-		add_action( 'wp_enqueue_scripts', array( $this, 'register_pullquote_style' )  );
 	}
 
 	/**
@@ -28,8 +29,8 @@ class WDS_Pull_Quote_Shortcode {
 	 * @since 1.0.0
 	 */
 	public function init() {
-		add_filter( 'mce_external_plugins', array( $this, 'add_buttons' )  );
-		add_filter( 'mce_buttons', array( $this, 'register_buttons' )  );
+		add_filter( 'mce_external_plugins', array( $this, 'add_buttons' ) );
+		add_filter( 'mce_buttons', array( $this, 'register_buttons' ) );
 	}
 
 	/**
@@ -71,6 +72,16 @@ class WDS_Pull_Quote_Shortcode {
 		) );
 	}
 
+	/**
+	 * Check for theme pull quote stylesheet and register it
+	 * @since 1.0.0
+	 */
+	public function register_pullquote_style() {
+		if ( file_exists( get_stylesheet_directory().'/pullquote.css' ) ) {
+			wp_register_style( 'pullquote', get_stylesheet_directory_uri().'/pullquote.css', null, '1.0.0' );
+			$this->theme_style = true;
+		}
+	}
 
 	/**
 	 * Enqueues our button script and ads the dialog markup to the dom
@@ -194,18 +205,12 @@ class WDS_Pull_Quote_Shortcode {
 
 		$width = is_numeric( $width ) && ( $width < 101 && $width > 0 ) ? absint( $width ) .'%' : 'auto';
 
-		return '<div style="width:'. $width .'" class="pullquote '. $align .'">'. $trimmed . $attribution .'</div>';
-	}
-
-	/**
-	 * Check for theme pullquote stylesheet or add our own css to footer
-	 * @since 1.0.0
-	 */
-	public function register_pullquote_style() {
-		if ( file_exists( get_stylesheet_directory().'/pullquote.css' ) )
-			wp_enqueue_style( 'pullquote', get_stylesheet_directory_uri().'/pullquote.css', null, '1.0.0' );
+		if ( $this->theme_style )
+			wp_enqueue_style( 'pullquote' );
 		else
-			add_action( 'wp_footer', array( $this, 'default_css' )  );
+			add_action( 'wp_footer', array( $this, 'default_css' ) );
+
+		return '<div style="width:'. $width .'" class="pullquote '. $align .'">'. $trimmed . $attribution .'</div>';
 	}
 
 	/**
@@ -215,7 +220,7 @@ class WDS_Pull_Quote_Shortcode {
 	public function default_css() {
 		?>
 		<style type="text/css">
-		/* Pullquote shortcode */
+		/* Pull quote shortcode */
 		.pullquote, .pullquote.alignleft {
 			padding: .5em 1.2em .5em 0;
 			float: left;
