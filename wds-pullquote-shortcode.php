@@ -12,30 +12,56 @@ class WDS_Pull_Quote_Shortcode {
 
 	public $btn = 'wdspq';
 
+	/**
+	 * Let's get started
+	 */
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'init' )  );
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_button_script' )  );
 		add_action( 'admin_footer', array( $this, 'enqueue_button_script' )  );
-		add_shortcode( 'pullquote', array( $this, 'pullquote' )  );
+		add_shortcode( 'pullquote', array( $this, 'pullquote' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'register_pullquote_style' )  );
 	}
 
+	/**
+	 * Hooks for the admin side
+	 * @since 1.0.0
+	 */
 	public function init() {
 		add_filter( 'mce_external_plugins', array( $this, 'add_buttons' )  );
 		add_filter( 'mce_buttons', array( $this, 'register_buttons' )  );
 	}
 
+	/**
+	 * Adds our shortcode button plugin to the WP tinymce editor
+	 * @since  1.0.0
+	 * @param  array $plugin_array array of plugins for tinymce
+	 * @return array               updated array of plugins
+	 */
 	public function add_buttons( $plugin_array ) {
 		$plugin_array[$this->btn] = plugins_url( '/button-mce.js', __FILE__ );
 		return $plugin_array;
 	}
 
+	/**
+	 * Adds our shortcode button to the WP tinymce editor
+	 * @since  1.0.0
+	 * @param  array $buttons array of plugins for tinymce
+	 * @return array          updated array of buttons
+	 */
 	public function register_buttons( $buttons ) {
 		array_push( $buttons, $this->btn );
 		return $buttons;
 	}
 
+	/**
+	 * Registers our jquery ui dialog buttons script & localizes text
+	 * @since 1.0.0
+	 */
 	public function register_button_script() {
-		wp_register_script( $this->btn, plugins_url( '/button.js', __FILE__ ) , array( 'jquery', 'jquery-ui-dialog', 'quicktags' ), '0.1.0', true );
+
+		wp_register_script( $this->btn, plugins_url( '/button.js', __FILE__ ) , array( 'jquery', 'jquery-ui-dialog', 'quicktags' ), '1.0.0', true );
+
 		wp_localize_script( $this->btn, $this->btn.'text', array(
 			'check_number' => __( 'value must be an integer and greater than 0.', 'wds' ),
 			'check_empty_quote' => __( 'Quote must not be empty.', 'wds' ),
@@ -45,6 +71,11 @@ class WDS_Pull_Quote_Shortcode {
 		) );
 	}
 
+
+	/**
+	 * Enqueues our button script and ads the dialog markup to the dom
+	 * @since 1.0.0
+	 */
 	public function enqueue_button_script() {
 		$current = get_current_screen();
 
@@ -108,7 +139,7 @@ class WDS_Pull_Quote_Shortcode {
 					</tr>
 					<tr>
 						<td><label for="wdspq-width"><?php _e( 'Pull Quote Width', 'wds' ); ?></label></td>
-						<td><input type="number" name="wdspq-width" id="wdspq-width" value="52" class="text ui-widget-content ui-corner-all" />%</td>
+						<td><input type="number" name="wdspq-width" id="wdspq-width" value="" class="text ui-widget-content ui-corner-all" />%</td>
 					</tr>
 					<tr>
 						<td><label for="wdspq-doquote"><?php _e( 'Display Quote Marks', 'wds' ); ?></label></td>
@@ -124,9 +155,9 @@ class WDS_Pull_Quote_Shortcode {
 	/**
 	 * Displays a pull quote
 	 * @since 1.0.0
-	 * @param  array $args arguments to pass to the shortcode
-	 * @param  array $args arguments to pass to the shortcode
-	 * @return string      concatenated widget output
+	 * @param  array  $args    arguments to pass to the shortcode
+	 * @param  string $content content to pass to the shortcode
+	 * @return string          concatenated shortcode output
 	 */
 	function pullquote( $atts, $content = '' ) {
 		// defaults
@@ -135,7 +166,7 @@ class WDS_Pull_Quote_Shortcode {
 			'attribution' => '',
 			'attribution_link' => '',
 			'chars' => 130,
-			'width' => 52,
+			'width' => 'auto',
 			'quote' => true,
 		), $atts ) );
 
@@ -159,11 +190,70 @@ class WDS_Pull_Quote_Shortcode {
 			$trimmed = '<q>'. $trimmed .'</q>';
 
 		$attribution = $attribution && $attribution_link ? '<a href="'. esc_url( $attribution_link ) .'" target="_blank">'. $attribution .'</a>' : $attribution;
-		$attribution = $attribution ? '<div class="attribution">&#8212;'. $attribution .'</div>' : '';
+		$attribution = $attribution ? '<div class="attribution secondary">&#8212;'. $attribution .'</div>' : '';
 
-		$width = is_numeric( $width ) && $width < 101 ? $width : 52;
+		$width = is_numeric( $width ) && ( $width < 101 && $width > 0 ) ? absint( $width ) .'%' : 'auto';
 
-		return '<div style="width:'. absint( $width ) .'%" class="pullquote '. $align .'">'. $trimmed . $attribution .'</div>';
+		return '<div style="width:'. $width .'" class="pullquote '. $align .'">'. $trimmed . $attribution .'</div>';
 	}
+
+	/**
+	 * Check for theme pullquote stylesheet or add our own css to footer
+	 * @since 1.0.0
+	 */
+	public function register_pullquote_style() {
+		if ( file_exists( get_stylesheet_directory().'/pullquote.css' ) )
+			wp_enqueue_style( 'pullquote', get_stylesheet_directory_uri().'/pullquote.css', null, '1.0.0' );
+		else
+			add_action( 'wp_footer', array( $this, 'default_css' )  );
+	}
+
+	/**
+	 * Fallback css for styling pull quotes
+	 * @since 1.0.0
+	 */
+	public function default_css() {
+		?>
+		<style type="text/css">
+		/* Pullquote shortcode */
+		.pullquote, .pullquote.alignleft {
+			padding: .5em 1.2em .5em 0;
+			float: left;
+			position: relative;
+			margin: 0;
+		}
+		.pullquote.alignright {
+			padding: .5em 0 .5em 1.2em;
+			float: right;
+			text-align: right;
+			margin: 0;
+		}
+		.pullquote.aligncenter {
+			padding: .5em 1.2em;
+			float: none;
+			margin: 0 auto;
+		}
+		.pullquote {
+			font-weight: 500;
+			font-size: 160%;
+		}
+		.pullquote.alignleft q:before {
+			position: absolute;
+			top: .5em;
+			left: -.35em;
+		}
+		.pullquote.alignright q:after {
+			letter-spacing: -1em;
+		}
+		.pullquote .attribution {
+			font-weight: 100;
+			font-size: 65%;
+			letter-spacing: 1px;
+			text-transform: uppercase;
+		}
+		</style>
+		<?php
+	}
+
 }
 new WDS_Pull_Quote_Shortcode();

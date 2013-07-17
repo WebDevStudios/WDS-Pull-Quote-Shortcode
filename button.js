@@ -28,8 +28,11 @@ jQuery(function($) {
 	}
 
 	function checkNumber( o, n ) {
-		var val = parseFloat( o.val() );
+		var val = o.val();
+		if ( val == '' )
+			return true;
 
+		val = parseFloat( val );
 		if ( !isNumber( val ) || val < 1 ) {
 			o.addClass( 'error' );
 			updateTips( n + ' ' + window.wdspqtext.check_number );
